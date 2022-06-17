@@ -25,8 +25,6 @@ import score from './entities/Votes/routes'
 
 require('newrelic')
 
-require('newrelic')
-
 const jobs = manager()
 jobs.cron('@eachMinute', activateProposals)
 jobs.cron('@eachMinute', finishProposal)
@@ -64,6 +62,7 @@ app.use('/', social)
 app.use(filesystem('public', '404.html'))
 
 Logger.subscribe('error', (message: string, data: Record<string, any>) => {
+  console.log('we got an error in the logger subscription, this is good', message, data)
   noticeError(new Error(message), data)
 })
 

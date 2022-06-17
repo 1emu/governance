@@ -387,6 +387,15 @@ export async function createProposal(
     throw new RequestError(`Error getting profile "${data.user}"`, RequestError.InternalServerError, err as Error)
   }
 
+  try {
+    throw new Error('this error is just to see if we can get the stack trace there')
+  } catch (err) {
+    throw new RequestError(
+      `Error doing something really important with user "${data.user}"`,
+      RequestError.InternalServerError,
+      err as Error
+    )
+  }
   //
   // Create proposal payload
   //
