@@ -242,6 +242,7 @@ export async function createProposalBanName(req: WithAuth) {
   if (!validName) {
     throw new RequestError('Name is not valid')
   }
+  throw new Error('This is an error right here!!')
 
   const alreadyBanned = await isAlreadyBannedName(configuration.name)
   if (alreadyBanned) {

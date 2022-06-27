@@ -21,5 +21,6 @@ exports.onCreateWebpackConfig = ({ actions, plugins }) => {
         util: false,
       },
     },
+    externals: ['newrelic'],
   })
 }
