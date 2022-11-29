@@ -4,8 +4,8 @@ import useFormatMessage from 'decentraland-gatsby/dist/hooks/useFormatMessage'
 import { Header } from 'decentraland-ui/dist/components/Header/Header'
 import { Loader } from 'decentraland-ui/dist/components/Loader/Loader'
 
-import { SurveyDecoder } from '../../../entities/SurveyTopic/decoder'
-import { ReactionType, Survey, SurveyTopicAttributes } from '../../../entities/SurveyTopic/types'
+import { decodeSurvey } from '../../../entities/SurveyTopic/decoder'
+import { ReactionType, Topic } from '../../../entities/SurveyTopic/types'
 import { Vote } from '../../../entities/Votes/types'
 import Divider from '../../Common/Divider'
 
@@ -15,7 +15,7 @@ import SurveyTopicResult from './SurveyTopicResult'
 interface Props {
   votes: Record<string, Vote> | null
   isLoadingVotes: boolean
-  surveyTopics: Pick<SurveyTopicAttributes, 'label' | 'topic_id'>[] | null
+  surveyTopics: Topic[] | null
   isLoadingSurveyTopics: boolean
 }
 
@@ -29,26 +29,22 @@ function initializeReactionCounters() {
   return reactionsCounters
 }
 
-function initializeTopicResults(surveyTopics: Pick<SurveyTopicAttributes, 'topic_id' | 'label'>[]) {
+function initializeTopicResults(surveyTopics: Topic[]) {
   const topicsResults: Record<any, Record<any, any>> = {}
   for (const topic of surveyTopics) {
-    topicsResults[topic.label] = initializeReactionCounters()
+    topicsResults[topic.topic_id] = initializeReactionCounters()
   }
   return topicsResults
 }
 
-function getResults(
-  surveyTopics: Pick<SurveyTopicAttributes, 'topic_id' | 'label'>[] | null,
-  votes: Record<string, Vote> | null
-) {
+function getResults(surveyTopics: Topic[] | null, votes: Record<string, Vote> | null) {
   if (!surveyTopics || !votes) return {}
-  const decoder = new SurveyDecoder(surveyTopics)
   const topicsResults = initializeTopicResults(surveyTopics)
   Object.keys(votes).map((key) => {
-    const survey: Survey = decoder.decode(votes[key].reason)
+    const survey = decodeSurvey(votes[key].metadata)
     survey.map((topicFeedback) => {
       if (topicFeedback.reaction != ReactionType.EMPTY) {
-        topicsResults[topicFeedback.topic.label][topicFeedback.reaction] += 1
+        topicsResults[topicFeedback.topic.topic_id][topicFeedback.reaction] += 1
       }
     })
   })
@@ -58,7 +54,7 @@ function getResults(
 const SurveyResults = ({ votes, isLoadingVotes, surveyTopics, isLoadingSurveyTopics }: Props) => {
   const t = useFormatMessage()
   const topicResults = useMemo(() => getResults(surveyTopics, votes), [surveyTopics, votes])
-  const topicLabels = Object.keys(topicResults)
+  const topicIds = Object.keys(topicResults)
   const thereAreVotes = votes && Object.keys(votes).length > 0 && !isLoadingVotes
   const thereAreSurveyTopics = surveyTopics && surveyTopics?.length > 0 && !isLoadingSurveyTopics
 
@@ -75,12 +71,12 @@ const SurveyResults = ({ votes, isLoadingVotes, surveyTopics, isLoadingSurveyTop
           <div className="SurveyResults__Header">
             <Header>{t('survey.results.title')}</Header>
           </div>
-          {topicLabels.map((label: string, index: any) => {
+          {topicIds.map((topicId: string, index: any) => {
             return (
               <SurveyTopicResult
                 key={`SurveyTopicResult__${index}`}
-                topicLabel={label}
-                topicResult={topicResults[label]}
+                topicId={topicId}
+                topicResult={topicResults[topicId]}
               />
             )
           })}

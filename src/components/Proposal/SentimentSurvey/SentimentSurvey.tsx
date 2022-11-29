@@ -10,7 +10,7 @@ import SentimentSurveyRow from './SentimentSurveyRow'
 
 interface Props {
   survey: Survey
-  surveyTopics: Pick<SurveyTopicAttributes, 'label' | 'topic_id'>[] | null
+  surveyTopics: Topic[] | null
   isLoadingSurveyTopics: boolean
   setSurvey: React.Dispatch<React.SetStateAction<Survey>>
 }
@@ -19,14 +19,12 @@ const SentimentSurvey = ({ survey, surveyTopics, isLoadingSurveyTopics, setSurve
   const t = useFormatMessage()
 
   useEffect(() => {
-    if (!isLoadingSurveyTopics) {
-      if (survey.length === 0) {
-        const newSurvey: Survey = []
-        surveyTopics?.forEach((topic) => {
-          newSurvey.push({ topic, reaction: ReactionType.EMPTY })
-        })
-        setSurvey(newSurvey)
-      }
+    if (!isLoadingSurveyTopics && survey.length === 0) {
+      const newSurvey: Survey = []
+      surveyTopics?.forEach((topic) => {
+        newSurvey.push({ topic, reaction: ReactionType.EMPTY })
+      })
+      setSurvey(newSurvey)
     }
   }, [survey, isLoadingSurveyTopics, surveyTopics, setSurvey])
 

@@ -7,9 +7,9 @@ import { Button } from 'decentraland-ui/dist/components/Button/Button'
 import { Header } from 'decentraland-ui/dist/components/Header/Header'
 import { Modal } from 'decentraland-ui/dist/components/Modal/Modal'
 
-import { Survey, SurveyTopicAttributes } from '../../../../entities/SurveyTopic/types'
+import { Survey, Topic } from '../../../../entities/SurveyTopic/types'
 import { formatChoice } from '../../../../modules/votes/utils'
-import { ProposalPageContext, SelectedChoice } from '../../../../pages/proposal'
+import { ProposalPageState, SelectedChoice } from '../../../../pages/proposal'
 import SentimentSurvey from '../../../Proposal/SentimentSurvey/SentimentSurvey'
 import '../../ProposalModal.css'
 
@@ -18,11 +18,11 @@ import './VotingModal.css'
 interface VotingModalSurveyProps {
   survey: Survey
   setSurvey: React.Dispatch<React.SetStateAction<Survey>>
-  surveyTopics: Pick<SurveyTopicAttributes, 'label' | 'topic_id'>[] | null
+  surveyTopics: Topic[] | null
   isLoadingSurveyTopics: boolean
   onCastVote: (selectedChoice: SelectedChoice, survey?: Survey) => void
   castingVote: boolean
-  proposalContext: ProposalPageContext
+  proposalPageState: ProposalPageState
 }
 
 export function VotingModalSurvey({
@@ -32,10 +32,10 @@ export function VotingModalSurvey({
   isLoadingSurveyTopics,
   onCastVote,
   castingVote,
-  proposalContext,
+  proposalPageState,
 }: VotingModalSurveyProps) {
   const t = useFormatMessage()
-  const { selectedChoice, showVotingError, retryTimer } = proposalContext
+  const { selectedChoice, showVotingError, retryTimer } = proposalPageState
 
   return (
     <Modal.Content>
